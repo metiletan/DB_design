@@ -1,12 +1,4 @@
--- Дизайн базы данных:
--- 1.Разработайте базу данных для управления курсами. База данных содержит следующие сущности:
--- a.students: student_no, teacher_no, course_no, student_name, email, birth_date.
--- b.teachers: teacher_no, teacher_name, phone_no
--- c.courses: course_no, course_name, start_date, end_date.
--- ● Секционировать по годам, таблицу students по полю birth_date с помощью механизма range
--- ● В таблице students сделать первичный ключ в сочетании двух полей student_no и birth_date
--- ● Создать индекс по полю students.email
--- ● Создать уникальный индекс по полю teachers.phone_no
+-- Database design
 
 CREATE DATABASE courses;
 USE courses;
@@ -61,7 +53,7 @@ CREATE TABLE courses (
     end_date DATE NOT NULL
 );
 
--- 2.На свое усмотрение добавить тестовые данные (7-10 строк) в наши три таблицы.
+-- 2. Add test data
 
 INSERT INTO students VALUES (101, 201, 3, 'Chernova Regina', 'regina@gmail.com', '1985-01-01'),
 							(102, 201, 2, 'Aronova Marina', 'arna@gmail.com', '1992-06-22'),
@@ -79,13 +71,13 @@ INSERT INTO courses VALUES (2, 'Business Intelligence', '2022-01-08', '2022-06-0
 							(3,'Basics of SQL', '2022-04-12', '2022-10-12'),
                             (6, 'JavaScript', '2022-06-08', '2022-12-08');
                             
--- 3.Отобразить данные за любой год из таблицы students и зафиксировать в виду комментария план выполнения запроса, где будет видно что запрос будет выполняться по конкретной секции.
+-- 3. Work with db
 
 EXPLAIN SELECT * FROM courses.students PARTITION (p1992);
 -- # id, select_type, table, partitions, type, possible_keys, key, key_len, ref, rows, filtered, Extra
 -- '1', 'SIMPLE', 'students', 'p1992', 'ALL', NULL, NULL, NULL, NULL, '1', '100.00', NULL
 
--- 4.Отобразить данные учителя, по любому одному номеру телефона и зафиксировать план выполнения запроса, где будет видно, что запрос будет выполняться по индексу, а не методом ALL. Далее индекс из поля teachers.phone_no сделать невидимым и зафиксировать план выполнения запроса, где ожидаемый результат -метод ALL. В итоге индекс оставить в статусе -видимый. 
+-- 4. Work with db
 
 EXPLAIN SELECT * FROM courses.teachers
 WHERE phone_no = '+380987651344';
@@ -98,12 +90,12 @@ WHERE phone_no = '+380987651344';
 -- # id, select_type, table, partitions, type, possible_keys, key, key_len, ref, rows, filtered, Extra
 -- '1', 'SIMPLE', 'teachers', NULL, 'ALL', NULL, NULL, NULL, NULL, '3', '33.33', 'Using where'
 
--- 5.Специально сделаем 3 дубляжа в таблице students (добавим еще 3 одинаковые строки).
+-- 5. Work with duplicate values
 INSERT INTO students VALUES (110, 201, 3, 'Lykov Alexandr', 'lyalex@gmail.com', '1989-09-17'),
 							(111, 201, 3, 'Lykov Alexandr', 'lyalex@gmail.com', '1989-09-17'),
                             (112, 201, 3, 'Lykov Alexandr', 'lyalex@gmail.com', '1989-09-17');
                             
--- 6.Написать запрос, который выводит строки с дубляжами
+-- 6. Work with duplicate values
 SELECT *
 FROM students
 WHERE email IN (
